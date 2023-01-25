@@ -4,7 +4,7 @@ This is a console game about a space traveler who makes his way through armadas 
 
 ## Controls
 
-To control your spaceship, press `←` `↑` `↓` `→` keys and hit `space` to shoot motherfuckers ahead. If you have been shot by one of this fucking bastards, press `enter` and keep fucking them up.
+To control your spaceship, press `←` `↑` `↓` `→` keys and hit `space` to shoot motherfuckers ahead. If you were shot by one of this fucking bastards, press `enter` and keep fucking them up.
 
 ## Types of enemies
 
