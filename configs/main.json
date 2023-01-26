@@ -1,5 +1,9 @@
 {
 	"ticks_per_second": 100,
 	"width_in_characters": 30,
-	"height_in_characters": 50
+	"height_in_characters": 50,
+
+	"game": {
+		"sandbox_mode": true
+	}
 }

@@ -67,6 +67,7 @@ player_config = get_config("./configs/player.json")
 ticks_per_second = get_config_value(main_config, ["ticks_per_second"], 100)
 width_in_characters = get_config_value(main_config, ["width_in_characters"], 30)
 height_in_characters = get_config_value(main_config, ["height_in_characters"], 70)
+sandbox_mode = get_config_value(main_config, ["game", "sandbox_mode"], False)
 
 
 def ticks(amount_of_ticks:int):

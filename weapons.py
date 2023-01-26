@@ -5,23 +5,25 @@ class MiniGun():
     def __init__(self, shooter):
         self.name = "MiniGun"
         self.damage = 1
-        self.cost = 1
+        self.cost = 3
         self.speed = 50
-        self.frequency = 5
+        self.frequency = 7
         
         self.shooter = shooter
 
         self.bullet = bullets.Bullet
 
     def new_bullet(self) -> bullets.Bullet:
-        return self.bullet(self)
+        if self.shooter.energy >= self.cost:
+            self.shooter.expend_energy(self.cost)
+            return self.bullet(self)
     
 
 class MachineGun():
     def __init__(self, shooter):
         self.name = "MachineGun"
         self.damage = 3
-        self.cost = 1
+        self.cost = 5
         self.speed = 60
         self.frequency = 15
 
@@ -30,14 +32,16 @@ class MachineGun():
         self.bullet = bullets.Bullet
 
     def new_bullet(self) -> bullets.Bullet:
-        return self.bullet(self)
+        if self.shooter.energy >= self.cost:
+            self.shooter.expend_energy(self.cost)
+            return self.bullet(self)
     
 class UltraGun():
     def __init__(self, shooter):
         self.name = "UltraGun"
-        self.damage = 2
-        self.cost = 5
-        self.speed = 200
+        self.damage = 5
+        self.cost = 4
+        self.speed = 100
         self.frequency = 100
 
         self.shooter = shooter
@@ -45,4 +49,6 @@ class UltraGun():
         self.bullet = bullets.Bullet
 
     def new_bullet(self) -> bullets.Bullet:
-        return self.bullet(self)
+        if self.shooter.energy >= self.cost:
+            self.shooter.expend_energy(self.cost)
+            return self.bullet(self)

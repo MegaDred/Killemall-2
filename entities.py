@@ -2,6 +2,7 @@ import weapons
 import random
 import keyboard
 from colorama import Fore, Style
+from basis import *
 
 from utils import ticks, width_in_characters, height_in_characters
 import bullets
@@ -16,10 +17,35 @@ class SimpleEntity:
 
         self.weapon = None
 
+        self.MAX_HEALTH = health
+        self.MAX_ENERGY = energy
+
+        self.energy_restore_speed = 15
+
+        self.shooting = True
+
     def shoot(self) -> bullets.Bullet:
-        if self.weapon is not None and ticks(self.weapon(self).frequency):
+        if self.weapon is not None and ticks(self.weapon(self).frequency) and self.shooting == True:
             return self.weapon(self).new_bullet()
         else: return None
+
+    def expend_energy(self, amount:int):
+        if self.energy > amount:
+            self.energy -= amount
+        else: self.energy = 0
+
+    def restore_energy(self, amount:int):
+        if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed):
+            if self.shooting == True and self.energy < self.weapon(self).cost: self.shooting = False
+            elif self.shooting == False and self.energy == self.MAX_ENERGY: self.shooting = True
+
+            if self.shooting == False:
+                if self.MAX_ENERGY - self.energy > amount:
+                    self.energy += amount
+                else: self.energy = self.MAX_ENERGY
+                if self.energy == self.MAX_ENERGY:
+                    self.shooting = True
+        
 
     def damage(self, amount:int):
         if self.health > amount:
@@ -30,13 +56,12 @@ class SimpleEntity:
     def move(self):
         pass
 
-class Player(SimpleEntity):
 
-    def __init__(self, *, name:str, health:int, energy:int, speed:int, skin:str):
+class Player(SimpleEntity, Navigate):
+
+    def __init__(self, *, name:str="Player", health:int=1, energy:int=100, speed:int=40, skin:str="▲"):
         super().__init__(name, health, energy, speed, skin)
 
-        self.MAX_HEALTH = health
-        self.MAX_ENERGY = energy
         self.IS_FORWARD = True
         self.IS_FRIENDLY = True
 
@@ -57,13 +82,8 @@ class Player(SimpleEntity):
             return self.weapon(self).new_bullet()
         else: return None
 
-    def expend_energy(self, amount:int):
-        if self.energy > amount:
-            self.energy -= amount
-        else: self.energy = 0
-
     def restore_energy(self, amount:int):
-        if self.energy < self.MAX_ENERGY and amount > 0:
+        if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed) and 57 not in self.keys.keys():
             if self.MAX_ENERGY - self.energy > amount:
                 self.energy += amount
             else: self.energy = self.MAX_ENERGY
@@ -77,25 +97,20 @@ class Player(SimpleEntity):
     def move(self):
         if ticks(self.speed):
             if 72 in self.keys.keys():  # up
-                if not self.y-1 < self.area_top_border:
-                    self.y -= 1
+                self.up()
             if 80 in self.keys.keys():  # down
-                if not self.y+1 > self.area_bottom_border:
-                    self.y += 1
+                self.down()
             if 77 in self.keys.keys():  # right
-                if not self.x+1 > self.area_right_border:
-                    self.x += 1
+                self.right()
             if 75 in self.keys.keys():  # left
-                if not self.x-1 < self.area_left_border:
-                    self.x -= 1
+                self.left()
 
-class Bot(SimpleEntity):
+
+class Bot(SimpleEntity, Navigate):
     
-    def __init__(self, *, name:str, health:int, energy:int, speed:int, skin:str):
+    def __init__(self, *, name:str="Bot", health:int=1, energy:int=50, speed:int=20, skin:str="◊"):
         super().__init__(name, health, energy, speed, skin)
 
-        self.MAX_HEALTH = health
-        self.MAX_ENERGY = energy
         self.IS_FORWARD = False
         self.IS_FRIENDLY = False
 
@@ -118,23 +133,24 @@ class Bot(SimpleEntity):
                 self.y -= 1
             else:
                 if self.goal != self.x and self.goal is not None:
-                    if random.randint(1, 100) == 1 and self.y-1 >= self.area_top_border: self.y -= 1
-                    elif random.randint(1, 100) == 1 and self.y+1 <= self.area_bottom_border: self.y += 1
+                    if random.randint(1, 100) == 1: self.up()
+                    elif random.randint(1, 100) == 1: self.down()
 
-                    if self.goal > self.x and self.x+1 <= self.area_right_border: self.x += 1
-                    elif self.goal < self.x and self.x-1 >= self.area_left_border: self.x -= 1
+                    if self.goal > self.x: self.right()
+                    elif self.goal < self.x: self.left()
                 else:
                     self.goal = random.randint(self.area_left_border, self.area_right_border)
 
-class Torturer(SimpleEntity):
+
+class Torturer(SimpleEntity, Navigate):
     
-    def __init__(self, *, name:str, health:int, energy:int, speed:int, skin:str):
+    def __init__(self, *, name:str="Torturer", health:int=1, energy:int=1000, speed:int=20, skin:str="█"):
         super().__init__(name, health, energy, speed, skin)
 
-        self.MAX_HEALTH = health
-        self.MAX_ENERGY = energy
         self.IS_FORWARD = False
         self.IS_FRIENDLY = False
+
+        self.energy_restore_speed = 100
 
         self.area_top_border = 4
         self.area_bottom_border = int(height_in_characters/3)
@@ -155,10 +171,10 @@ class Torturer(SimpleEntity):
                 self.y -= 1
             else:
                 if self.goal != self.x and self.goal is not None:
-                    if random.randint(1, 100) == 1 and self.y-1 >= self.area_top_border: self.y -= 1
-                    elif random.randint(1, 100) == 1 and self.y+1 <= self.area_bottom_border: self.y += 1
+                    if random.randint(1, 100) == 1: self.up()
+                    elif random.randint(1, 100) == 1: self.down()
 
-                    if self.goal > self.x and self.x+1 <= self.area_right_border: self.x += 1
-                    elif self.goal < self.x and self.x-1 >= self.area_left_border: self.x -= 1
+                    if self.goal > self.x: self.right()
+                    elif self.goal < self.x: self.left()
                 else:
                     if random.randint(1, 20) == 1: self.goal = random.randint(self.area_left_border, self.area_right_border)

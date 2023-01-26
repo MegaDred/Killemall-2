@@ -1,5 +1,5 @@
 from utils import ticks
-from colorama import Fore, Style
+from basis import *
 
 class Bullet:
     def __init__(self, weapon):
