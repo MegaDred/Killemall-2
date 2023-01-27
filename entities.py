@@ -1,11 +1,10 @@
 import weapons
 import random
-import keyboard
-from colorama import Fore, Style
 from basis import *
 
 from utils import ticks, width_in_characters, height_in_characters, is_pressed
 import bullets
+
 
 class SimpleEntity:
     def __init__(self, name:str, health:int, energy:int, speed:int, skin:str):
@@ -46,7 +45,6 @@ class SimpleEntity:
                 if self.energy == self.MAX_ENERGY:
                     self.shooting = True
         
-
     def damage(self, amount:int):
         if self.health > amount:
             self.health -= amount
@@ -55,6 +53,15 @@ class SimpleEntity:
 
     def move(self):
         pass
+
+    def behavior(self, sysvars):
+        self.move()
+
+        shoot = self.shoot()
+        if shoot is not None:
+            sysvars.bullets.append(shoot)
+
+        self.restore_energy(5)
 
 
 class Player(SimpleEntity, Navigate):
@@ -81,7 +88,7 @@ class Player(SimpleEntity, Navigate):
         else: return None
 
     def restore_energy(self, amount:int):
-        if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed) and is_pressed(57):
+        if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed) and not is_pressed(57):
             if self.MAX_ENERGY - self.energy > amount:
                 self.energy += amount
             else: self.energy = self.MAX_ENERGY
@@ -140,9 +147,9 @@ class Bot(SimpleEntity, Navigate):
                     self.goal = random.randint(self.area_left_border, self.area_right_border)
 
 
-class Torturer(SimpleEntity, Navigate):
+class Divider(SimpleEntity, Navigate):
     
-    def __init__(self, *, name:str="Torturer", health:int=1, energy:int=1000, speed:int=20, skin:str="█"):
+    def __init__(self, *, name:str="Divider", health:int=1, energy:int=1000, speed:int=20, skin:str="█"):
         super().__init__(name, health, energy, speed, skin)
 
         self.IS_FORWARD = False

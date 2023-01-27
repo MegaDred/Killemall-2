@@ -14,22 +14,16 @@
 #
 # Information bar
 #
-#    [ ♥ ■■■■■ 1 ] [ ♠ ■■■■■ 100 ]
-#    [ Kills 11 ]    [ Time 1:30 ]
-#
+#    [ ♥ ■■■■■ 1 ] [ ♠ ■■■■■ 100 ] [Kills: 11] [Time: 30s]
+#    
 
 
 import os
-import re
 import sys
 import time
 import random
 import asyncio
-import datetime
-import keyboard
 import traceback
-from colorama import Fore, Style
-from pympler.tracker import SummaryTracker
 
 from entities import *
 from rendering import *
@@ -37,6 +31,7 @@ from utils import *
 
 
 # |  ▲▪▫░▒▓█▄▀▌▐•Ꞌꞌꞈ◌○◊ι۞۝֎֍˚˙ʷʬ◄►▲█•●│■   |
+
 
 class SystemVariables:
 	def __init__(self):
@@ -65,12 +60,13 @@ sysvars = SystemVariables()
 os.system(f'mode con:cols={width_in_characters*2} lines={height_in_characters+1}')
 
 async def spawner():
-	probability = random.randint(1, 150) if True in [isinstance(i, Bot) for i in sysvars.entities] else random.randint(1, 15)
-	if ticks(10) and probability == 1:
-		sysvars.entities.append(Bot())
+	if ticks(10):
+		probability = random.randint(1, 150) if True in [isinstance(i, Bot) for i in sysvars.entities] else random.randint(1, 15)
+		if probability == 1:
+			sysvars.entities.append(Bot())
 
-	if ticks(10) and random.randint(1,700) == 1:
-		sysvars.entities.append(Torturer())
+		if random.randint(1,700) == 1:
+			sysvars.entities.append(Divider())
 		
 
 async def bullet_processing():
@@ -82,13 +78,7 @@ async def bullet_processing():
 async def entity_behavior():
 	sysvars.entities = [i for i in sysvars.entities if i.health != 0]
 	for entity in sysvars.entities:
-		entity.move()
-
-		shoot = entity.shoot()
-		if shoot is not None:
-			sysvars.bullets.append(shoot)
-
-		entity.restore_energy(5)
+		entity.behavior(sysvars)
 
 
 async def find_collisions():
