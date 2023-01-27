@@ -4,7 +4,7 @@ import keyboard
 from colorama import Fore, Style
 from basis import *
 
-from utils import ticks, width_in_characters, height_in_characters
+from utils import ticks, width_in_characters, height_in_characters, is_pressed
 import bullets
 
 class SimpleEntity:
@@ -65,8 +65,6 @@ class Player(SimpleEntity, Navigate):
         self.IS_FORWARD = True
         self.IS_FRIENDLY = True
 
-        self.keys = keyboard._pressed_events
-
         self.area_top_border = int(height_in_characters/3)*2
         self.area_bottom_border = height_in_characters-1
         self.area_right_border = width_in_characters-1
@@ -78,12 +76,12 @@ class Player(SimpleEntity, Navigate):
         self.weapon = weapons.MiniGun
 
     def shoot(self) -> bullets.Bullet:
-        if self.weapon is not None and ticks(self.weapon(self).frequency) and 57 in self.keys.keys():
+        if self.weapon is not None and ticks(self.weapon(self).frequency) and is_pressed(57):
             return self.weapon(self).new_bullet()
         else: return None
 
     def restore_energy(self, amount:int):
-        if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed) and 57 not in self.keys.keys():
+        if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed) and is_pressed(57):
             if self.MAX_ENERGY - self.energy > amount:
                 self.energy += amount
             else: self.energy = self.MAX_ENERGY
@@ -96,13 +94,13 @@ class Player(SimpleEntity, Navigate):
 
     def move(self):
         if ticks(self.speed):
-            if 72 in self.keys.keys():  # up
+            if is_pressed(72):  # up
                 self.up()
-            if 80 in self.keys.keys():  # down
+            if is_pressed(80):  # down
                 self.down()
-            if 77 in self.keys.keys():  # right
+            if is_pressed(77):  # right
                 self.right()
-            if 75 in self.keys.keys():  # left
+            if is_pressed(75):  # left
                 self.left()
 
 

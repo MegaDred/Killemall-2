@@ -18,6 +18,7 @@
 #    [ Kills 11 ]    [ Time 1:30 ]
 #
 
+
 import os
 import re
 import sys
@@ -108,13 +109,12 @@ def main():
 			sysvars.start_loop = time.time()
 		else: continue
 		
-		keyboard.hook(lambda e: None)
-		if 28 in keyboard._pressed_events.keys() and sysvars.player.health == 0:
+		if is_pressed(28) and sysvars.player.health == 0:
 			sysvars = SystemVariables()
-		if 1 in keyboard._pressed_events.keys():
-			time.sleep(0.3)
+		if is_pressed(1):
 			while True:
-				if 1 in keyboard._pressed_events.keys():
+				keyboard.wait('esc')
+				if is_pressed(1):
 					time.sleep(0.3)
 					break
 

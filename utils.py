@@ -5,8 +5,12 @@ import json
 import pytz
 import time
 import math
+import keyboard
 import datetime
 import traceback
+
+
+keyboard.hook(lambda e: None)
 
 
 def msk(format:str="%Y-%m-%d %H:%M:%S", timestamp:int=None) -> str:
@@ -58,6 +62,12 @@ def is_matrix(object:list[list]):
         else:
             row_length = len(i)
     return row_length
+
+
+def is_pressed(key:int):
+    if key in keyboard._pressed_events.keys():
+        return True
+    else: return False
 
 
 main_config = get_config("./configs/main.json")
