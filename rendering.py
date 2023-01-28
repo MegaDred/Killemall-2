@@ -2,7 +2,6 @@ import random
 from colorama import Fore, Style
 
 from utils import is_matrix
-import entities
 
 def generate_new_map(width_in_characters: int, height_in_characters: int) -> list[list[str]]:
     new_map = []
@@ -32,7 +31,7 @@ def map_loading(previos_frame: list[list[str]]) -> list[list[str]]:
     return next_frame
 
 
-def objects_loading(matrix: list[list[str]], entities:list[entities.SimpleEntity], bullets:list):
+def objects_loading(matrix: list[list[str]], entities:list, bullets:list):
 
     matrix = [list(i) for i in matrix]
 

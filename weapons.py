@@ -6,8 +6,8 @@ class MiniGun():
         self.name = "MiniGun"
         self.damage = 1
         self.cost = 3
-        self.speed = 50
-        self.frequency = 7
+        self.speed = 55
+        self.frequency = 6
         
         self.shooter = shooter
 

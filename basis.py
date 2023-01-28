@@ -1,31 +1,6 @@
 import time
 
-from enum import Enum
-from utils import width_in_characters, height_in_characters, ticks
-
-class InfoBar:
-    def __init__(self, player):
-        self.kills = 0
-        self.seconds = 0
-
-    def structuring(self, player):
-    
-        hit_points = '■'*round(player.health/(player.MAX_HEALTH/5))
-        enrg_points = '■'*round(player.energy/(player.MAX_ENERGY/5))
-
-        health = f"[ ♥ {hit_points}{' '*(5-len(hit_points))} {player.health} ]"
-        energy = f"[ ♠ {enrg_points}{' '*(5-len(enrg_points))} {player.energy} ]"
-        kills = f"[Kills: {self.kills}]"
-
-        return f"{health} {energy} {kills} [Time: {self.seconds}s]"
-
-
-    def update_kills(self):
-        self.kills += 1
-
-    def second(self, player):
-        if player.health != 0 and ticks(1): 
-            self.seconds += 1
+from utils import width_in_characters, height_in_characters
 
 
 class Navigate:

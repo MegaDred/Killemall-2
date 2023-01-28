@@ -1,16 +1,22 @@
 import os
 import re
-import sys
 import json
 import pytz
 import time
-import math
+import random
 import keyboard
 import datetime
 import traceback
 
 
 keyboard.hook(lambda e: None)
+
+
+def randbool(probability:float=0.5):
+    if probability >= 0 and probability <= 1:
+        return random.random() <= probability
+    else:
+        raise ValueError("Probability must be float from 0 to 1")
 
 
 def msk(format:str="%Y-%m-%d %H:%M:%S", timestamp:int=None) -> str:

@@ -1,9 +1,11 @@
-import weapons
 import random
-from basis import *
+from enum import Enum
 
-from utils import ticks, width_in_characters, height_in_characters, is_pressed
+import weapons
 import bullets
+
+from basis import *
+from utils import ticks, width_in_characters, height_in_characters, is_pressed, randbool
 
 
 class SimpleEntity:
@@ -28,12 +30,12 @@ class SimpleEntity:
             return self.weapon(self).new_bullet()
         else: return None
 
-    def expend_energy(self, amount:int):
+    def expend_energy(self, amount:int) -> None:
         if self.energy > amount:
             self.energy -= amount
         else: self.energy = 0
 
-    def restore_energy(self, amount:int):
+    def restore_energy(self, amount:int) -> None:
         if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed):
             if self.shooting == True and self.energy < self.weapon(self).cost: self.shooting = False
             elif self.shooting == False and self.energy == self.MAX_ENERGY: self.shooting = True
@@ -45,7 +47,7 @@ class SimpleEntity:
                 if self.energy == self.MAX_ENERGY:
                     self.shooting = True
         
-    def damage(self, amount:int):
+    def damage(self, amount:int) -> None:
         if self.health > amount:
             self.health -= amount
         else:
@@ -54,7 +56,7 @@ class SimpleEntity:
     def move(self):
         pass
 
-    def behavior(self, sysvars):
+    def behavior(self, sysvars) -> None:
         self.move()
 
         shoot = self.shoot()
@@ -62,6 +64,10 @@ class SimpleEntity:
             sysvars.bullets.append(shoot)
 
         self.restore_energy(5)
+
+    @classmethod
+    def spawn_roulete(self, sv, ec) -> bool:
+        return False
 
 
 class Player(SimpleEntity, Navigate):
@@ -81,6 +87,9 @@ class Player(SimpleEntity, Navigate):
         self.y = int((self.area_top_border + self.area_bottom_border)/2)
 
         self.weapon = weapons.MiniGun
+
+        self.kills = 0
+        self.lifetime = 0
 
     def shoot(self) -> bullets.Bullet:
         if self.weapon is not None and ticks(self.weapon(self).frequency) and is_pressed(57):
@@ -110,6 +119,21 @@ class Player(SimpleEntity, Navigate):
             if is_pressed(75):  # left
                 self.left()
 
+    def infobar_structure(self):    
+        hit_points = '■'*round(self.health/(self.MAX_HEALTH/5))
+        enrg_points = '■'*round(self.energy/(self.MAX_ENERGY/5))
+        health = f"[ ♥ {hit_points}{' '*(5-len(hit_points))} {self.health} ]"
+        energy = f"[ ♠ {enrg_points}{' '*(5-len(enrg_points))} {self.energy} ]"
+        kills = f"[Kills: {self.kills}]"
+        return f"{health} {energy} {kills} [Time: {self.lifetime}s]"
+
+    def increment_kills(self):
+        self.kills += 1
+
+    def increment_seconds(self):
+        if self.health != 0 and ticks(1): 
+            self.lifetime += 1
+
 
 class Bot(SimpleEntity, Navigate):
     
@@ -130,6 +154,8 @@ class Bot(SimpleEntity, Navigate):
 
         self.weapon = weapons.MiniGun
 
+        self.energy_restore_speed = 10
+
     def move(self):
         if ticks(self.speed):
             if self.y < self.area_top_border:
@@ -145,6 +171,26 @@ class Bot(SimpleEntity, Navigate):
                     elif self.goal < self.x: self.left()
                 else:
                     self.goal = random.randint(self.area_left_border, self.area_right_border)
+
+    @classmethod
+    def spawn_roulete(self, sv, ec) -> bool:
+        if ticks(1):
+            probability = 0.5
+            bots = 0
+            divider = False
+            for i in ec.entities:
+                if isinstance(i, Bot):
+                    bots += 1
+                if isinstance(i, Divider):
+                    divider = True
+
+            if bots == 1: probability = 0.05
+            elif bots == 2: probability = 0.01
+            elif bots >= 3: probability = 0.001
+            
+            if divider: probability /= 200
+
+            return randbool(probability)
 
 
 class Divider(SimpleEntity, Navigate):
@@ -182,4 +228,16 @@ class Divider(SimpleEntity, Navigate):
                     if self.goal > self.x: self.right()
                     elif self.goal < self.x: self.left()
                 else:
-                    if random.randint(1, 20) == 1: self.goal = random.randint(self.area_left_border, self.area_right_border)
+                    if random.randint(1, 20) == 1: self.goal = random.randint(self.area_left_border, self.area_right_border) 
+
+    @classmethod
+    def spawn_roulete(self, sv, ec) -> bool:
+        if ticks(1) and ec.player.kills >= 5 and ec.player.kills <= 45:
+                probability = round(((20-abs(25-ec.player.kills))*((0.05-0.0001)/20))+0.0001, 6)
+                return randbool(probability)
+
+
+class EnumEntities(Enum):
+    PLAYER = Player
+    BOT = Bot
+    DIVIDER = Divider
