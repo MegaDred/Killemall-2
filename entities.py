@@ -89,7 +89,7 @@ class Player(SimpleEntity, Navigate):
         self.IS_FRIENDLY = True
         
         self.x = int(width_in_characters/2)
-        self.y = int((self.top_border + self.bottom_border)/2)
+        self.y = int((self.top_border + self.bottom_border)/2) if None not in (self.top_border, self.bottom_border) else int(height_in_characters/2)
 
         self.weapon = weapons.SG_228
 

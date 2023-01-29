@@ -15,19 +15,19 @@ class Navigate:
         self.y = 0
 
     def up(self):
-        if not self.is_in_permitted_area() or self.y - 1 >= self.top_border:
+        if not self.is_in_permitted_area() or (self.top_border is None or self.y - 1 >= self.top_border):
             self.y -= 1
 
     def down(self):
-        if not self.is_in_permitted_area() or self.y + 1 <= self.bottom_border:
+        if not self.is_in_permitted_area() or (self.bottom_border is None or self.y + 1 <= self.bottom_border):
             self.y += 1
 
     def right(self):
-        if not self.is_in_permitted_area() or self.x + 1 <= self.right_border:
+        if not self.is_in_permitted_area() or (self.right_border is None or self.x + 1 <= self.right_border):
             self.x += 1
 
     def left(self):
-        if not self.is_in_permitted_area() or self.x - 1 >= self.left_border:
+        if not self.is_in_permitted_area() or (self.left_border is None or self.x - 1 >= self.left_border):
             self.x -= 1
 
     def tp(self, x, y):
@@ -36,4 +36,8 @@ class Navigate:
             self.y = y
 
     def is_in_permitted_area(self):
-        return all((self.y in range(self.top_border, self.bottom_border+1), self.x in range(self.left_border, self.right_border+1)))
+        if not (self.top_border is None or self.y >= self.top_border): return False
+        if not (self.bottom_border is None or self.y <= self.bottom_border): return False
+        if not (self.right_border is None or self.x <= self.right_border): return False
+        if not (self.left_border is None or self.x >= self.left_border): return False
+        return True

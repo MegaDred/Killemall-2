@@ -1,7 +1,7 @@
 import random
 from colorama import Fore, Style
 
-from utils import is_matrix
+from utils import is_matrix, width_in_characters, height_in_characters
 
 def generate_new_map(width_in_characters: int, height_in_characters: int) -> list[list[str]]:
     new_map = []
@@ -35,10 +35,9 @@ def objects_loading(matrix: list[list[str]], entities:list=[], prokectiles:list=
 
     matrix = [list(i) for i in matrix]
 
-    for j in prokectiles:
-        matrix[j.y][j.x] = j.skin
-    for j in entities:
-        matrix[j.y][j.x] = j.skin
+    for j in (prokectiles + entities):
+        if all((0 <= j.x < width_in_characters, 0 <= j.y < height_in_characters)):
+            matrix[j.y][j.x] = j.skin
 
     return matrix
 
