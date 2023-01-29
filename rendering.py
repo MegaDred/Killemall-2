@@ -31,7 +31,7 @@ def map_loading(previos_frame: list[list[str]]) -> list[list[str]]:
     return next_frame
 
 
-def objects_loading(matrix: list[list[str]], entities:list, prokectiles:list):
+def objects_loading(matrix: list[list[str]], entities:list=[], prokectiles:list=[]):
 
     matrix = [list(i) for i in matrix]
 

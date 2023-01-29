@@ -28,7 +28,7 @@ class SimpleEntity:
 
     def shoot(self) -> projectiles.Lazer:
         if self.weapon is not None and ticks(self.weapon.frequency) and self.shooting == True:
-            return self.weapon(self).new_projectile()
+            return self.weapon(self).new_projectile ()
         else: return None
 
     def expend_energy(self, amount:int) -> None:
@@ -77,19 +77,19 @@ class SimpleEntity:
 
 class Player(SimpleEntity, Navigate):
 
+    top_border = int(height_in_characters/3)*2
+    bottom_border = height_in_characters-1
+    right_border = width_in_characters-1
+    left_border = 1
+
     def __init__(self, *, name:str="Player", health:int=1, energy:int=100, speed:int=40, skin:str="▲"):
         super().__init__(name, health, energy, speed, skin)
 
         self.IS_FORWARD = True
         self.IS_FRIENDLY = True
-
-        self.area_top_border = int(height_in_characters/3)*2
-        self.area_bottom_border = height_in_characters-1
-        self.area_right_border = width_in_characters-1
-        self.area_left_border = 1
-
+        
         self.x = int(width_in_characters/2)
-        self.y = int((self.area_top_border + self.area_bottom_border)/2)
+        self.y = int((self.top_border + self.bottom_border)/2)
 
         self.weapon = weapons.SG_228
 
@@ -141,19 +141,19 @@ class Player(SimpleEntity, Navigate):
 
 
 class Bot(SimpleEntity, Navigate):
-    
+
+    top_border = 4
+    bottom_border = int(height_in_characters/3)
+    right_border = width_in_characters-1
+    left_border = 1
+
     def __init__(self, *, name:str="Bot", health:int=1, energy:int=50, speed:int=20, skin:str="◊"):
         super().__init__(name, health, energy, speed, skin)
 
         self.IS_FORWARD = False
         self.IS_FRIENDLY = False
 
-        self.area_top_border = 4
-        self.area_bottom_border = int(height_in_characters/3)
-        self.area_right_border = width_in_characters-1
-        self.area_left_border = 1
-
-        self.x = random.randint(self.area_left_border, self.area_right_border)
+        self.x = random.randint(self.left_border, self.right_border)
         self.y = 0
         self.goal = None
 
@@ -163,9 +163,9 @@ class Bot(SimpleEntity, Navigate):
 
     def move(self):
         if ticks(self.speed):
-            if self.y < self.area_top_border:
+            if self.y < self.top_border:
                 self.y += 1
-            elif self.y > self.area_bottom_border:
+            elif self.y > self.bottom_border:
                 self.y -= 1
             else:
                 if self.goal != self.x and self.goal is not None:
@@ -175,7 +175,7 @@ class Bot(SimpleEntity, Navigate):
                     if self.goal > self.x: self.right()
                     elif self.goal < self.x: self.left()
                 else:
-                    self.goal = random.randint(self.area_left_border, self.area_right_border)
+                    self.goal = random.randint(self.left_border, self.right_border)
 
     @classmethod
     def spawn_roulete(self, sv, ec) -> bool:
@@ -206,7 +206,12 @@ class Bot(SimpleEntity, Navigate):
 
 
 class Divider(SimpleEntity, Navigate):
-    
+
+    top_border = 4
+    bottom_border = int(height_in_characters/3)
+    right_border = width_in_characters-2
+    left_border = 2
+
     def __init__(self, *, name:str="Divider", health:int=1, energy:int=1000, speed:int=20, skin:str="█"):
         super().__init__(name, health, energy, speed, skin)
 
@@ -215,12 +220,7 @@ class Divider(SimpleEntity, Navigate):
 
         self.energy_restore_speed = 100
 
-        self.area_top_border = 4
-        self.area_bottom_border = int(height_in_characters/3)
-        self.area_right_border = width_in_characters-2
-        self.area_left_border = 2
-
-        self.x = random.randint(self.area_left_border+1, self.area_right_border-1)
+        self.x = random.randint(self.left_border+1, self.right_border-1)
         self.y = 0
         self.goal = None
 
@@ -228,9 +228,9 @@ class Divider(SimpleEntity, Navigate):
 
     def move(self):
         if ticks(self.speed):
-            if self.y < self.area_top_border:
+            if self.y < self.top_border:
                 self.y += 1
-            elif self.y > self.area_bottom_border:
+            elif self.y > self.bottom_border:
                 self.y -= 1
             else:
                 if self.goal != self.x and self.goal is not None:
@@ -240,7 +240,7 @@ class Divider(SimpleEntity, Navigate):
                     if self.goal > self.x: self.right()
                     elif self.goal < self.x: self.left()
                 else:
-                    if random.randint(1, 20) == 1: self.goal = random.randint(self.area_left_border, self.area_right_border) 
+                    if random.randint(1, 20) == 1: self.goal = random.randint(self.left_border, self.right_border) 
 
     @classmethod
     def spawn_roulete(self, sv, ec) -> bool:
