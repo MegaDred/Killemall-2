@@ -1,0 +1,1 @@
+python killemall2.py

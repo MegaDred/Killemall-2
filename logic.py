@@ -1,4 +1,5 @@
 from entities import *
+from utils import sandbox_mode
 
 class EntityControl:
 
@@ -8,8 +9,16 @@ class EntityControl:
 
     async def process(self, sv):
         self.entities = [i for i in self.entities if i.health != 0]
-        for entity in EnumEntities:
-            if entity.value.spawn_roulete(sv, self):
-                self.entities.append(entity.value())
+
+        if not sandbox_mode:
+            for entity in EnumEntities:
+                if entity.value.spawn_roulete(sv, self):
+                    self.entities.append(entity.value())
+        else:
+            if ticks(4):
+                for entity in EnumEntities:
+                    if entity.value.spawn_forcibly():
+                        self.entities.append(entity.value())
+
         for entity in self.entities:
             entity.behavior(sv)

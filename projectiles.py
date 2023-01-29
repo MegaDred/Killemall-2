@@ -1,7 +1,6 @@
 from utils import ticks
-from basis import *
 
-class Bullet:
+class Lazer:
     def __init__(self, weapon):
         self.weapon = weapon
 

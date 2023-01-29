@@ -1,54 +1,55 @@
 from utils import ticks
-import bullets
+import projectiles
 
-class MiniGun():
+
+class Weapon():
+    name = "Unnamed"
+    damage = 1
+    cost = 0
+    speed = 50
+    frequency = 6
+    projectile = projectiles.Lazer
+
     def __init__(self, shooter):
-        self.name = "MiniGun"
-        self.damage = 1
-        self.cost = 3
-        self.speed = 55
-        self.frequency = 6
-        
         self.shooter = shooter
 
-        self.bullet = bullets.Bullet
-
-    def new_bullet(self) -> bullets.Bullet:
+    def new_projectile(self) -> projectile:
         if self.shooter.energy >= self.cost:
             self.shooter.expend_energy(self.cost)
-            return self.bullet(self)
+            return self.projectile(self)
+
+
+class SG_228(Weapon):
+    name = "SG-228"
+    damage = 1
+    cost = 3
+    speed = 55
+    frequency = 6
+    projectile = projectiles.Lazer
+
+    def __init__(self, shooter):
+        super().__init__(shooter)
     
 
-class MachineGun():
+class MFK_337(Weapon):
+    name = "MFK-337"
+    damage = 3
+    cost = 5
+    speed = 60
+    frequency = 15
+    projectile = projectiles.Lazer
+
     def __init__(self, shooter):
-        self.name = "MachineGun"
-        self.damage = 3
-        self.cost = 5
-        self.speed = 60
-        self.frequency = 15
-
-        self.shooter = shooter
-
-        self.bullet = bullets.Bullet
-
-    def new_bullet(self) -> bullets.Bullet:
-        if self.shooter.energy >= self.cost:
-            self.shooter.expend_energy(self.cost)
-            return self.bullet(self)
+        super().__init__(shooter)
     
-class UltraGun():
+
+class UDG_95(Weapon):
+    name = "UDG-95"
+    damage = 5
+    cost = 4
+    speed = 100
+    frequency = 100
+    projectile = projectiles.Lazer
+
     def __init__(self, shooter):
-        self.name = "UltraGun"
-        self.damage = 5
-        self.cost = 4
-        self.speed = 100
-        self.frequency = 100
-
-        self.shooter = shooter
-
-        self.bullet = bullets.Bullet
-
-    def new_bullet(self) -> bullets.Bullet:
-        if self.shooter.energy >= self.cost:
-            self.shooter.expend_energy(self.cost)
-            return self.bullet(self)
+        super().__init__(shooter)

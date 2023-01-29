@@ -2,10 +2,11 @@ import random
 from enum import Enum
 
 import weapons
-import bullets
+import keyboard
+import projectiles
 
 from basis import *
-from utils import ticks, width_in_characters, height_in_characters, is_pressed, randbool
+from utils import ticks, width_in_characters, height_in_characters, randbool
 
 
 class SimpleEntity:
@@ -25,9 +26,9 @@ class SimpleEntity:
 
         self.shooting = True
 
-    def shoot(self) -> bullets.Bullet:
-        if self.weapon is not None and ticks(self.weapon(self).frequency) and self.shooting == True:
-            return self.weapon(self).new_bullet()
+    def shoot(self) -> projectiles.Lazer:
+        if self.weapon is not None and ticks(self.weapon.frequency) and self.shooting == True:
+            return self.weapon(self).new_projectile()
         else: return None
 
     def expend_energy(self, amount:int) -> None:
@@ -37,7 +38,7 @@ class SimpleEntity:
 
     def restore_energy(self, amount:int) -> None:
         if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed):
-            if self.shooting == True and self.energy < self.weapon(self).cost: self.shooting = False
+            if self.shooting == True and self.energy < self.weapon.cost: self.shooting = False
             elif self.shooting == False and self.energy == self.MAX_ENERGY: self.shooting = True
 
             if self.shooting == False:
@@ -56,17 +57,21 @@ class SimpleEntity:
     def move(self):
         pass
 
-    def behavior(self, sysvars) -> None:
+    def behavior(self, sv) -> None:
         self.move()
 
         shoot = self.shoot()
         if shoot is not None:
-            sysvars.bullets.append(shoot)
+            sv.projectiles.append(shoot)
 
         self.restore_energy(5)
 
     @classmethod
     def spawn_roulete(self, sv, ec) -> bool:
+        return False
+    
+    @classmethod
+    def spawn_forcibly(self) -> bool:
         return False
 
 
@@ -86,18 +91,18 @@ class Player(SimpleEntity, Navigate):
         self.x = int(width_in_characters/2)
         self.y = int((self.area_top_border + self.area_bottom_border)/2)
 
-        self.weapon = weapons.MiniGun
+        self.weapon = weapons.SG_228
 
         self.kills = 0
         self.lifetime = 0
 
-    def shoot(self) -> bullets.Bullet:
-        if self.weapon is not None and ticks(self.weapon(self).frequency) and is_pressed(57):
-            return self.weapon(self).new_bullet()
+    def shoot(self) -> projectiles.Lazer:
+        if self.weapon is not None and ticks(self.weapon.frequency) and keyboard.is_pressed(57):
+            return self.weapon(self).new_projectile()
         else: return None
 
     def restore_energy(self, amount:int):
-        if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed) and not is_pressed(57):
+        if self.energy < self.MAX_ENERGY and amount > 0 and ticks(self.energy_restore_speed) and not keyboard.is_pressed(57):
             if self.MAX_ENERGY - self.energy > amount:
                 self.energy += amount
             else: self.energy = self.MAX_ENERGY
@@ -110,13 +115,13 @@ class Player(SimpleEntity, Navigate):
 
     def move(self):
         if ticks(self.speed):
-            if is_pressed(72):  # up
+            if keyboard.is_pressed(72):  # up
                 self.up()
-            if is_pressed(80):  # down
+            if keyboard.is_pressed(80):  # down
                 self.down()
-            if is_pressed(77):  # right
+            if keyboard.is_pressed(77):  # right
                 self.right()
-            if is_pressed(75):  # left
+            if keyboard.is_pressed(75):  # left
                 self.left()
 
     def infobar_structure(self):    
@@ -125,7 +130,7 @@ class Player(SimpleEntity, Navigate):
         health = f"[ ♥ {hit_points}{' '*(5-len(hit_points))} {self.health} ]"
         energy = f"[ ♠ {enrg_points}{' '*(5-len(enrg_points))} {self.energy} ]"
         kills = f"[Kills: {self.kills}]"
-        return f"{health} {energy} {kills} [Time: {self.lifetime}s]"
+        return f"\n{health} {energy} {kills} [Time: {self.lifetime}s]"
 
     def increment_kills(self):
         self.kills += 1
@@ -152,7 +157,7 @@ class Bot(SimpleEntity, Navigate):
         self.y = 0
         self.goal = None
 
-        self.weapon = weapons.MiniGun
+        self.weapon = weapons.SG_228
 
         self.energy_restore_speed = 10
 
@@ -191,6 +196,13 @@ class Bot(SimpleEntity, Navigate):
             if divider: probability /= 200
 
             return randbool(probability)
+    
+    @classmethod
+    def spawn_forcibly(self) -> bool:
+        if keyboard.is_pressed(2):
+            return True
+        else:
+            return False
 
 
 class Divider(SimpleEntity, Navigate):
@@ -212,7 +224,7 @@ class Divider(SimpleEntity, Navigate):
         self.y = 0
         self.goal = None
 
-        self.weapon = random.choice((weapons.MachineGun, weapons.UltraGun)) 
+        self.weapon = random.choice((weapons.MFK_337, weapons.UDG_95)) 
 
     def move(self):
         if ticks(self.speed):
@@ -235,6 +247,13 @@ class Divider(SimpleEntity, Navigate):
         if ticks(1) and ec.player.kills >= 5 and ec.player.kills <= 45:
                 probability = round(((20-abs(25-ec.player.kills))*((0.05-0.0001)/20))+0.0001, 6)
                 return randbool(probability)
+        
+    @classmethod
+    def spawn_forcibly(self) -> bool:
+        if keyboard.is_pressed(3):
+            return True
+        else:
+            return False
 
 
 class EnumEntities(Enum):

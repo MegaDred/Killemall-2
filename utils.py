@@ -4,12 +4,8 @@ import json
 import pytz
 import time
 import random
-import keyboard
 import datetime
 import traceback
-
-
-keyboard.hook(lambda e: None)
 
 
 def randbool(probability:float=0.5):
@@ -70,17 +66,11 @@ def is_matrix(object:list[list]):
     return row_length
 
 
-def is_pressed(key:int):
-    if key in keyboard._pressed_events.keys():
-        return True
-    else: return False
-
-
 main_config = get_config("./configs/main.json")
 mobs_config = get_config("./configs/mobs.json")
 player_config = get_config("./configs/player.json")
 
-ticks_per_second = get_config_value(main_config, ["ticks_per_second"], 100)
+max_tps = get_config_value(main_config, ["ticks_per_second"], 100)
 width_in_characters = get_config_value(main_config, ["width_in_characters"], 30)
 height_in_characters = get_config_value(main_config, ["height_in_characters"], 70)
 sandbox_mode = get_config_value(main_config, ["game", "sandbox_mode"], False)
@@ -93,3 +83,7 @@ def ticks(amount_of_ticks:int):
     if int(((second - int(second)) + (1/max_ticks_per_second)) / (1/max_ticks_per_second)) % ((max_ticks_per_second+1)/amount_of_ticks) <= 1:
         return True
     else: return False
+
+def window_height_control(infopanel):
+    if infopanel.visible: os.system(f'mode con:cols={width_in_characters*2} lines={height_in_characters+1+infopanel.height}')		
+    else: os.system(f'mode con:cols={width_in_characters*2} lines={height_in_characters+1}')
