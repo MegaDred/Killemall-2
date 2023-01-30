@@ -12,6 +12,10 @@ player = None
 entities = None
 projectiles = None
 
+max_tps = 60
+width_in_characters = 30
+height_in_characters = 45
+
 
 def randbool(probability:float=0.5):
     if probability >= 0 and probability <= 1:
@@ -71,14 +75,9 @@ def is_matrix(object:list[list]):
     return row_length
 
 
-main_config = get_config("./configs/main.json")
-mobs_config = get_config("./configs/mobs.json")
-player_config = get_config("./configs/player.json")
+config = get_config("./config.json")
 
-max_tps = get_config_value(main_config, ["ticks_per_second"], 60)
-width_in_characters = get_config_value(main_config, ["width_in_characters"], 30)
-height_in_characters = get_config_value(main_config, ["height_in_characters"], 70)
-sandbox_mode = get_config_value(main_config, ["game", "sandbox_mode"], False)
+sandbox_mode = get_config_value(config, ["sandbox_mode"], False)
 
 
 def ticks(amount_of_ticks:int):
