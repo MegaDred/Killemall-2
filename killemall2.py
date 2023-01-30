@@ -40,48 +40,7 @@ utils.player = Player(name="Cherry")
 utils.entities = [utils.player]
 utils.projectiles = []
 
-class InfoPanel():
-		
-	def __init__(self):
-		self.visible = False
-		self.second = time.time()
-		self.ticks = 0
-		self.ticks_per_split_second = []
-		self.tps = 0
-
-		self.result = "\n\nTPS & FPS: {0}/{1}\n\nX: {4}, Y: {5}\nWeapon: {6}\n\nProjectiles: {2}\nEntities: {3}\n"
-		self.height = self.result.count("\n")
-		
-	def structure(self):
-		if self.visible:
-			if ticks(10):
-				self.tps = 0
-				for i in self.ticks_per_split_second:
-					self.tps += i
-			return self.result.format(self.tps, utils.max_tps, len(utils.projectiles), len(utils.entities), utils.player.x, utils.player.y, utils.player.weapon.name).replace("\n", "\n    ")
-		else:
-			return ""
-	
-	def note_tick_time(self):
-		if self.visible:
-			if time.time() > self.second+0.5:
-				if len(self.ticks_per_split_second) >= 2:
-					self.ticks_per_split_second.pop(0)
-				self.ticks_per_split_second.append(self.ticks)
-				self.ticks = 0
-				self.second = time.time()
-			self.ticks += 1
-
-	def toggle_visibility(self):
-		if self.visible:
-			self.visible = False
-			os.system(f'mode con:cols={utils.width_in_characters*2} lines={utils.height_in_characters+1}')		
-		else:
-			self.visible = True
-			os.system(f'mode con:cols={utils.width_in_characters*2} lines={utils.height_in_characters+1+infopanel.height}')
-
-
-infopanel = InfoPanel()
+infopanel = utils.InfoPanel()
 
 
 utils.window_height_control(infopanel)
