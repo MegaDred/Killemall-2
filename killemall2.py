@@ -1,4 +1,8 @@
-# KILLEMALL
+# !/usr/bin/python
+# -*- coding: utf-8 -*-
+
+#
+# KILLEMALL 2
 #
 # There is a console game about a space wanderer
 # that goes through the armada of enemies and 
@@ -105,7 +109,12 @@ def main():
 			if keyboard.is_pressed(1):
 				time.sleep(0.3)
 
-		tasks = [entity_control(), bullet_processing(), find_collisions()]
+		tasks = (
+			entity_control(), 
+		  	bullet_processing(), 
+		    find_collisions()
+		)
+		
 		loop.run_until_complete(asyncio.gather(*tasks))
 
 		if infopanel_visible != infopanel.visible:
@@ -118,7 +127,7 @@ def main():
 
 if __name__ == '__main__':
 	try:
-		utils.log("info", "Starting this shit")
+		utils.log("info", "--- Starting this shit ---")
 		main()
 	except Exception:
 		sys.stdout.write(traceback.format_exc())

@@ -33,10 +33,13 @@ def log(level:str, text: str) -> None:  # levels: info, warn, error
     now_log = msk('%Y-%m-%d %H:%M:%S')
     if len(os.listdir(os.getcwd())) != 0:
         latest_log = os.listdir(os.getcwd())[-1]
-    number = int(latest_log.split('_')[1][:-4]) + 1 if len(latest_log) >= 16 and re.search(msk('%Y-%m-%d') + r"_[0-9]+\.log", latest_log) else 1
+    else: latest_log = None
+    number = int(latest_log.split('_')[1][:-4]) + 1 if latest_log is not None and len(latest_log) >= 16 and re.search(msk('%Y-%m-%d') + r"_[0-9]+\.log", latest_log) else 1
     now_filename = msk('%Y-%m-%d_' + str(number))
+    if not os.path.exists(f"logs"):
+        os.mkdir("logs")
     if not os.path.exists(f"logs/{now_filename}.log"):
-        with open(f"logs/{now_filename}.log", "w", encoding="utf8"): pass
+        with open(f"logs/{now_filename}.log", "w", encoding="utf8") as new: pass
     with open(f"logs/{now_filename}.log", "a", encoding="utf8") as logs:
         logs.write(str(f"[{now_log}] [{level.upper()}] {text}\n"))
 
