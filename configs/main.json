@@ -1,5 +1,5 @@
 {
-	"ticks_per_second": 100,
+	"ticks_per_second": 60,
 	"width_in_characters": 30,
 	"height_in_characters": 45,
 

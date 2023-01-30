@@ -1,6 +1,5 @@
-from utils import ticks
 import projectiles
-
+from utils import ticks
 
 class Weapon():
     name = "Unnamed"

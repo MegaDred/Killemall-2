@@ -1,12 +1,10 @@
 import random
+import keyboard
 from enum import Enum
 
+import utils
 import weapons
-import keyboard
-import projectiles
-
-from basis import *
-from utils import ticks, width_in_characters, height_in_characters, randbool
+from projectiles import *
 
 
 class SimpleEntity:
@@ -26,7 +24,7 @@ class SimpleEntity:
 
         self.shooting = True
 
-    def shoot(self) -> projectiles.Lazer:
+    def shoot(self) -> Lazer:
         if self.weapon is not None and ticks(self.weapon.frequency) and self.shooting == True:
             return self.weapon(self).new_projectile ()
         else: return None
@@ -57,17 +55,17 @@ class SimpleEntity:
     def move(self):
         pass
 
-    def behavior(self, sv) -> None:
+    def behavior(self) -> None:
         self.move()
 
         shoot = self.shoot()
         if shoot is not None:
-            sv.projectiles.append(shoot)
+            utils.projectiles.append(shoot)
 
         self.restore_energy(5)
 
     @classmethod
-    def spawn_roulete(self, sv, ec) -> bool:
+    def spawn_roulete(self) -> bool:
         return False
     
     @classmethod
@@ -75,11 +73,11 @@ class SimpleEntity:
         return False
 
 
-class Player(SimpleEntity, Navigate):
+class Player(SimpleEntity, utils.Navigate):
 
-    top_border = int(height_in_characters/3)*2
-    bottom_border = height_in_characters-1
-    right_border = width_in_characters-1
+    top_border = int(utils.height_in_characters/3)*2
+    bottom_border = utils.height_in_characters-1
+    right_border = utils.width_in_characters-1
     left_border = 1
 
     def __init__(self, *, name:str="Player", health:int=1, energy:int=100, speed:int=40, skin:str="▲"):
@@ -88,15 +86,15 @@ class Player(SimpleEntity, Navigate):
         self.IS_FORWARD = True
         self.IS_FRIENDLY = True
         
-        self.x = int(width_in_characters/2)
-        self.y = int((self.top_border + self.bottom_border)/2) if None not in (self.top_border, self.bottom_border) else int(height_in_characters/2)
+        self.x = int(utils.width_in_characters/2)
+        self.y = int((self.top_border + self.bottom_border)/2) if None not in (self.top_border, self.bottom_border) else int(utils.height_in_characters/2)
 
         self.weapon = weapons.SG_228
 
         self.kills = 0
         self.lifetime = 0
 
-    def shoot(self) -> projectiles.Lazer:
+    def shoot(self) -> Lazer:
         if self.weapon is not None and ticks(self.weapon.frequency) and keyboard.is_pressed(57):
             return self.weapon(self).new_projectile()
         else: return None
@@ -140,11 +138,11 @@ class Player(SimpleEntity, Navigate):
             self.lifetime += 1
 
 
-class Bot(SimpleEntity, Navigate):
+class Bot(SimpleEntity, utils.Navigate):
 
     top_border = 4
-    bottom_border = int(height_in_characters/3)
-    right_border = width_in_characters-1
+    bottom_border = int(utils.height_in_characters/3)
+    right_border = utils.width_in_characters-1
     left_border = 1
 
     def __init__(self, *, name:str="Bot", health:int=1, energy:int=50, speed:int=20, skin:str="◊"):
@@ -178,12 +176,12 @@ class Bot(SimpleEntity, Navigate):
                     self.goal = random.randint(self.left_border, self.right_border)
 
     @classmethod
-    def spawn_roulete(self, sv, ec) -> bool:
+    def spawn_roulete(self) -> bool:
         if ticks(1):
             probability = 0.5
             bots = 0
             divider = False
-            for i in ec.entities:
+            for i in utils.entities:
                 if isinstance(i, Bot):
                     bots += 1
                 if isinstance(i, Divider):
@@ -195,7 +193,7 @@ class Bot(SimpleEntity, Navigate):
             
             if divider: probability /= 200
 
-            return randbool(probability)
+            return utils.randbool(probability)
     
     @classmethod
     def spawn_forcibly(self) -> bool:
@@ -205,11 +203,11 @@ class Bot(SimpleEntity, Navigate):
             return False
 
 
-class Divider(SimpleEntity, Navigate):
+class Divider(SimpleEntity, utils.Navigate):
 
     top_border = 4
-    bottom_border = int(height_in_characters/3)
-    right_border = width_in_characters-2
+    bottom_border = int(utils.height_in_characters/3)
+    right_border = utils.width_in_characters-2
     left_border = 2
 
     def __init__(self, *, name:str="Divider", health:int=1, energy:int=1000, speed:int=20, skin:str="█"):
@@ -243,10 +241,10 @@ class Divider(SimpleEntity, Navigate):
                     if random.randint(1, 20) == 1: self.goal = random.randint(self.left_border, self.right_border) 
 
     @classmethod
-    def spawn_roulete(self, sv, ec) -> bool:
-        if ticks(1) and ec.player.kills >= 5 and ec.player.kills <= 45:
-                probability = round(((20-abs(25-ec.player.kills))*((0.05-0.0001)/20))+0.0001, 6)
-                return randbool(probability)
+    def spawn_roulete(self) -> bool:
+        if ticks(1) and utils.player.kills >= 5 and utils.player.kills <= 45:
+                probability = round(((20-abs(25-utils.player.kills))*((0.05-0.0001)/20))+0.0001, 6)
+                return utils.randbool(probability)
         
     @classmethod
     def spawn_forcibly(self) -> bool:
