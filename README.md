@@ -14,7 +14,7 @@ To control your spaceship, press `←` `↑` `↓` `→` keys and hit `space` to
 
 ## Sandbox mode
 
-In default game mode enemies spawn with some probability, but in sandbox mode spawning is disabled. You can spawn enemies manually. Press `1` to spawn a Bot and `2` to spawn Divider.
+In default game mode enemies spawn with some probability, but in sandbox mode spawning is disabled. Check `config.json` to enable sandbox mode. You can spawn enemies manually. Press `1` to spawn a Bot and `2` to spawn Divider.
 
 ## Preview
 
