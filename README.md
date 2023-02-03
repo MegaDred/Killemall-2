@@ -2,6 +2,8 @@
 
 This is a console game about a space traveler who makes his way through armadas of robots and thousands of light years.
 
+This game is for Windows, but you can play it on Linux too (with some problems).
+
 ## Controls
 
 To control your spaceship, press `←` `↑` `↓` `→` keys and hit `space` to shoot motherfuckers ahead. Stop shooting to restore your energy. If you were shot by one of this fucking bastards, press `enter` and keep fucking them up. Press `esc` to pause the game. Also you can open infopanel by pressing `c`.
